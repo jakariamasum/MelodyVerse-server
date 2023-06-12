@@ -34,16 +34,66 @@ async function run() {
 
         const instructorsCollection = client.db("music-school").collection("instructors");
         const classesCollection = client.db("music-school").collection("classes");
+        const studentsCollection = client.db("music-school").collection("students");
+        const slectedCollection = client.db("music-school").collection("selected");
+        const addClassCollection = client.db("music-school").collection("addClass");
 
-        app.get('/instructors', async (req,res)=>{
-            const result= await instructorsCollection.find().toArray(); 
-            res.send(result); 
+        app.get('/instructors', async (req, res) => {
+            const result = await instructorsCollection.find().toArray();
+            res.send(result);
         })
 
 
-        app.get('/classes', async (req,res)=>{
-            const result= await classesCollection.find().toArray(); 
-            res.send(result); 
+        app.get('/classes', async (req, res) => {
+            const result = await classesCollection.find().toArray();
+            res.send(result);
+        })
+
+
+        app.post('/students', async (req, res) => {
+            const info = req.body;
+            // console.log(info)
+            const result = await studentsCollection.insertOne(info);
+            res.send(result);
+        })
+
+        app.get('/students', async (req, res) => {
+            const { email } = req.query;
+            if (email) {
+                const query = { email: email };
+                const result = await studentsCollection.findOne(query);
+                res.send(result)
+            }
+            else {
+                const result = await studentsCollection.find().toArray();
+                res.send(result)
+            }
+        })
+
+        app.post('/selected', async (req, res) => {
+            const info = req.body;
+            console.log(info)
+            const result = await slectedCollection.insertOne(info);
+            res.send(result);
+        })
+
+        app.get('/selected', async (req, res) => {
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const result = await slectedCollection.find(query).toArray();
+            res.send(result)
+        })
+
+        app.post('/add-class',async(req,res)=>{
+            const info=req.body; 
+            const result = await addClassCollection.insertOne(info); 
+            res.send(result);
+        })
+        app.get('/add-class',async(req,res)=>{
+            const result = await addClassCollection.find().toArray(); 
+            res.send(result);
         })
 
         // Send a ping to confirm a successful connection
@@ -60,4 +110,4 @@ run().catch(console.dir);
 
 app.listen(port, () => {
     console.log('ok musing here')
-})
+}) 
