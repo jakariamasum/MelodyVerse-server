@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 
 
@@ -57,8 +57,24 @@ async function run() {
             res.send(result);
         })
 
+        app.put('/students/:id', async (req, res) => {
+            const id = req.params.id;
+            const { role } = req.body;
+            const filter = { _id: new ObjectId(id) };
+            // create a document that sets the plot of the movie
+            const updateDoc = {
+                $set: {
+                    role: role
+                },
+            };
+        const result = await studentsCollection.updateOne(filter, updateDoc);
+        res.send(result)
+
+        })
+
         app.get('/students', async (req, res) => {
             const { email } = req.query;
+            // console.log('email',email)
             if (email) {
                 const query = { email: email };
                 const result = await studentsCollection.findOne(query);
@@ -86,13 +102,33 @@ async function run() {
             res.send(result)
         })
 
-        app.post('/add-class',async(req,res)=>{
-            const info=req.body; 
-            const result = await addClassCollection.insertOne(info); 
+        app.post('/add-class', async (req, res) => {
+            const info = req.body;
+            const result = await addClassCollection.insertOne(info);
             res.send(result);
         })
-        app.get('/add-class',async(req,res)=>{
-            const result = await addClassCollection.find().toArray(); 
+
+        app.put('/add-class/:id', async (req, res) => {
+            const id = req.params.id;
+            const { status } = req.body;
+            const filter = { _id: new ObjectId(id) };
+            // create a document that sets the plot of the movie
+            const updateDoc = {
+                $set: {
+                    status: status
+                },
+            };
+        const result = await addClassCollection.updateOne(filter, updateDoc);
+        res.send(result)
+
+        })
+
+        app.get('/add-class', async (req, res) => {
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const result = await addClassCollection.find(query).toArray();
             res.send(result);
         })
 
