@@ -44,15 +44,22 @@ async function run() {
         })
 
 
-        app.post('/classes',async(req,res)=>{
-            const info=req.body; 
-            const result= await classesCollection.insertOne(info); 
+        app.post('/classes', async (req, res) => {
+            const info = req.body;
+            const result = await classesCollection.insertOne(info);
             res.send(result);
         })
 
         app.get('/classes', async (req, res) => {
-            const result = await classesCollection.find().toArray();
-            res.send(result);
+            const { sort } = req.query;
+            if (sort) {
+                const result = await classesCollection.find().sort({ availableSeats: -1 }).limit(6).toArray();
+                res.send(result);
+            }
+            else {
+                const result = await classesCollection.find().toArray();
+                res.send(result);
+            }
         })
 
 
@@ -73,8 +80,8 @@ async function run() {
                     role: role
                 },
             };
-        const result = await studentsCollection.updateOne(filter, updateDoc);
-        res.send(result)
+            const result = await studentsCollection.updateOne(filter, updateDoc);
+            res.send(result)
 
         })
 
@@ -124,8 +131,8 @@ async function run() {
                     status: status
                 },
             };
-        const result = await addClassCollection.updateOne(filter, updateDoc);
-        res.send(result)
+            const result = await addClassCollection.updateOne(filter, updateDoc);
+            res.send(result)
 
         })
 
