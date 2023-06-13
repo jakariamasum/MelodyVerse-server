@@ -39,8 +39,15 @@ async function run() {
         const addClassCollection = client.db("music-school").collection("addClass");
 
         app.get('/instructors', async (req, res) => {
-            const result = await instructorsCollection.find().toArray();
-            res.send(result);
+            const { sort } = req.query;
+            if (sort) {
+                const result = await instructorsCollection.find().sort({ availableSeats: -1 }).limit(6).toArray();
+                res.send(result);
+            }
+            else {
+                const result = await instructorsCollection.find().toArray();
+                res.send(result);
+            }
         })
 
 
