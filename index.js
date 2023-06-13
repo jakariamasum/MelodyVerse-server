@@ -44,6 +44,12 @@ async function run() {
         })
 
 
+        app.post('/classes',async(req,res)=>{
+            const info=req.body; 
+            const result= await classesCollection.insertOne(info); 
+            res.send(result);
+        })
+
         app.get('/classes', async (req, res) => {
             const result = await classesCollection.find().toArray();
             res.send(result);
