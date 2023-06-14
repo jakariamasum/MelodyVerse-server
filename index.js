@@ -32,23 +32,11 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
-        const instructorsCollection = client.db("music-school").collection("instructors");
         const classesCollection = client.db("music-school").collection("classes");
         const studentsCollection = client.db("music-school").collection("students");
         const slectedCollection = client.db("music-school").collection("selected");
         const addClassCollection = client.db("music-school").collection("addClass");
 
-        app.get('/instructors', async (req, res) => {
-            const { sort } = req.query;
-            if (sort) {
-                const result = await instructorsCollection.find().sort({ availableSeats: -1 }).limit(6).toArray();
-                res.send(result);
-            }
-            else {
-                const result = await instructorsCollection.find().toArray();
-                res.send(result);
-            }
-        })
 
 
         app.post('/classes', async (req, res) => {
@@ -72,7 +60,7 @@ async function run() {
 
         app.post('/students', async (req, res) => {
             const info = req.body;
-            // console.log(info)
+            console.log(info)
             const result = await studentsCollection.insertOne(info);
             res.send(result);
         })
@@ -91,14 +79,26 @@ async function run() {
             res.send(result)
 
         })
+        app.delete('/selected/:id',async(req,res)=>{
+            const id=req.params.id; 
+            const filter={_id: new ObjectId(id)}
+            const result = await slectedCollection.deleteOne(filter);
+            res.send(result)
+        })
 
         app.get('/students', async (req, res) => {
-            const { email } = req.query;
+            const { email ,instructor} = req.query;
             // console.log('email',email)
             if (email) {
                 const query = { email: email };
                 const result = await studentsCollection.findOne(query);
                 // console.log(email, result)
+                res.send(result)
+            }
+            else if(instructor){
+                const query={role:instructor}; 
+                // console.log(query)
+                const result=await studentsCollection.find(query).toArray();
                 res.send(result)
             }
             else {
