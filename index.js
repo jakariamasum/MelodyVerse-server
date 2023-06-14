@@ -98,6 +98,7 @@ async function run() {
             if (email) {
                 const query = { email: email };
                 const result = await studentsCollection.findOne(query);
+                // console.log(email, result)
                 res.send(result)
             }
             else {
@@ -130,16 +131,27 @@ async function run() {
 
         app.put('/add-class/:id', async (req, res) => {
             const id = req.params.id;
-            const { status } = req.body;
+            const { status,feedBack } = req.body;
             const filter = { _id: new ObjectId(id) };
             // create a document that sets the plot of the movie
-            const updateDoc = {
-                $set: {
-                    status: status
-                },
-            };
-            const result = await addClassCollection.updateOne(filter, updateDoc);
-            res.send(result)
+            if(status){
+                const updateDoc = {
+                    $set: {
+                        status: status
+                    },
+                };
+                const result = await addClassCollection.updateOne(filter, updateDoc);
+                res.send(result)
+            }
+            else if(feedBack){
+                const updateDoc = {
+                    $set: {
+                        feedBack: feedBack
+                    },
+                };
+                const result = await addClassCollection.updateOne(filter, updateDoc);
+                res.send(result)
+            }
 
         })
 
